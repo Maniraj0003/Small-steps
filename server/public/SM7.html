@@ -1,0 +1,1290 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Small Steps: Understanding Farmers</title>
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet">
+<style>
+/* Your existing CSS. NO CHANGES HERE, except the minor textarea addition that was functionally necessary last time. */
+body { font-family: 'Poppins', sans-serif; margin: 0; padding: 0; background: #f9f9f9; color: #333; }
+.hidden { display: none !important; }
+.container, .dashboard, .map-content, .about-content, .contact-content, .faqs-content, .role-select-content, .post-land-content, .landowner-chat-content, .tenant-chat-content { /* Added .landowner-chat-content, .tenant-chat-content here */
+display: flex; flex-direction: column; align-items: center; padding: 40px 20px; min-height: 100vh; width: 100vw; box-sizing: border-box; background: #fff;
+}
+.welcome {
+/* FIX: Corrected the image URL here */
+background: url('https://images.unsplash.com/photo-1501004318641?crop=entropy&cs=tinysrgb&fit=crop&h=800&w=1400') no-repeat center center/cover;
+color: #333; height: 100vh; display: flex; flex-direction: column; justify-content: center; align-items: center; text-align: center;
+}
+h1 { margin-bottom: 10px; font-size: 2.5em; }
+.welcome h1 { color: #333; font-size: 3em; }
+.section, .dashboard-section {
+background: #f5f5f5; border-radius: 10px; box-shadow: 0 2px 8px rgba(0,0,0,0.07); padding: 30px 40px; margin: 20px 0; width: 90%; max-width: 600px; color: #333; text-align: left;
+}
+.dashboard-section h2 { color: #4CAF50; }
+.form-container {
+background-color: rgba(0, 0, 0, 0.05); padding: 30px; border-radius: 10px; max-width: 400px; width: 100%; margin: 30px auto 0; text-align: center;
+}
+.form-container input, .form-container select, .form-container textarea { /* Added textarea here to pick up form-container styling */
+width: 100%; padding: 12px; margin: 10px 0; border: 1px solid #ccc; border-radius: 5px; font-size: 16px;
+}
+.form-container button, .main-btn, .dashboard-btn, .nav-btn, .role-btn {
+padding: 12px 30px; background-color: #4CAF50; color: white; border: none; border-radius: 25px; font-size: 18px; cursor: pointer; margin: 10px 0; transition: 0.2s; min-width: 120px;
+}
+.form-container button:hover, .main-btn:hover, .dashboard-btn:hover, .nav-btn:hover, .role-btn:hover {
+background-color: #388e3c; transform: scale(1.05);
+}
+.nav-bar {
+width: 100vw; background: #333; color: #fff; display: flex; justify-content: center; gap: 20px; padding: 12px 0; position: sticky; top: 0; z-index: 10;
+}
+.nav-btn {
+background: transparent; color: #fff; border: none; font-size: 1em; padding: 8px 18px; border-radius: 5px; transition: background 0.2s;
+}
+.nav-btn.active, .nav-btn:focus { background: #4CAF50; color: #fff; }
+.back-button {
+margin-top: 20px; background-color: transparent; border: 2px solid #4CAF50; color: #4CAF50; padding: 10px 20px; border-radius: 25px; font-size: 16px; cursor: pointer; transition: 0.3s;
+}
+.back-button:hover { background-color: #4CAF50; color: white; transform: scale(1.05); }
+.role-select-content {
+background: url('https://images.unsplash.com/photo-1464983953574-0892a716854b?auto=format&fit=crop&w=1400&q=80') no-repeat center center/cover;
+color: #fff; justify-content: center;
+}
+.role-btns { display: flex; gap: 40px; margin-top: 40px; flex-wrap: wrap; justify-content: center; }
+.role-btn {
+background: #fff; color: #4CAF50; border: 3px solid #4CAF50; border-radius: 15px; font-size: 1.4em; font-weight: 600;
+padding: 35px 40px; min-width: 200px; min-height: 120px; display: flex; flex-direction: column; align-items: center; transition: all 0.25s; box-shadow: 0 2px 8px rgba(0,0,0,0.10);
+}
+.role-btn:hover { background: #4CAF50; color: #fff; border-color: #388e3c; transform: scale(1.05);}
+.role-btn .role-icon { font-size: 2.5em; margin-bottom: 10px; }
+.locked-role {
+background: #eee; color: #4CAF50; border: 2px solid #4CAF50; border-radius: 8px; font-size: 1em; font-weight: 600;
+padding: 10px 20px; margin-bottom: 15px; margin-top: 10px; display: inline-block;
+}
+footer { text-align: center; margin: 20px 0; font-size: 0.9em; color: #555; }
+iframe { width: 100%; height: 80vh; border: none; border-radius: 10px; margin-bottom: 20px; }
+@media (max-width: 700px) {
+.section, .dashboard-section { padding: 15px 5px; }
+.form-container { padding: 15px 5px; }
+.role-btns { gap: 15px; }
+.role-btn { min-width: 120px; min-height: 80px; font-size: 1em; }
+}
+
+.chat-message {
+    margin-bottom: 10px;
+    padding: 8px;
+    border-radius: 5px;
+}
+.chat-message.self {
+    background-color: #dcf8c6; /* Light green for user's own messages */
+    text-align: right;
+    border-left: 4px solid #4CAF50;
+}
+.chat-message.other {
+    background-color: #e6e6e6; /* Light gray for other's messages */
+    text-align: left;
+    border-right: 4px solid #888;
+}
+
+/* NEW: Admin Chat specific styles */
+.admin-chat-layout {
+    display: flex;
+    width: 90%;
+    max-width: 1200px; /* Increased max-width for dual pane */
+    gap: 20px;
+    min-height: 70vh;
+    background: #f5f5f5;
+    border-radius: 10px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.07);
+    padding: 20px;
+}
+
+.user-list-pane {
+    flex: 1;
+    min-width: 250px;
+    max-width: 350px;
+    border-right: 1px solid #eee;
+    padding-right: 20px;
+    overflow-y: auto;
+}
+
+.chat-window-pane {
+    flex: 2;
+    display: flex;
+    flex-direction: column;
+}
+
+.user-list-item {
+    padding: 12px 10px;
+    border-bottom: 1px solid #eee;
+    cursor: pointer;
+    background-color: #fff;
+    margin-bottom: 5px;
+    border-radius: 5px;
+    transition: background-color 0.2s;
+}
+
+.user-list-item:hover {
+    background-color: #e6f7e6; /* Light green on hover */
+}
+
+.user-list-item.active-chat {
+    background-color: #4CAF50;
+    color: white;
+    font-weight: 600;
+}
+
+.chat-history-container {
+    flex-grow: 1;
+    overflow-y: auto;
+    border: 1px solid #ccc;
+    padding: 10px;
+    margin-bottom: 10px;
+    background-color: #fff;
+    border-radius: 5px;
+}
+
+.chat-input-form {
+    display: flex;
+    gap: 10px;
+    margin-top: 10px;
+}
+
+.chat-input-form textarea {
+    flex-grow: 1;
+    padding: 10px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    font-size: 1em;
+    resize: vertical;
+}
+
+.chat-input-form button {
+    padding: 10px 20px;
+    background-color: #4CAF50;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background-color 0.2s;
+}
+
+.chat-input-form button:hover {
+    background-color: #388e3c;
+}
+</style>
+</head>
+<body>
+
+<div class="nav-bar hidden" id="navBar">
+<button class="nav-btn" id="navDashboard" onclick="showDashboard()">Dashboard</button>
+<button class="nav-btn" id="navMap" onclick="showMap()">Map</button>
+<button class="nav-btn" id="navProfile" onclick="showProfile()">Profile</button>
+<button class="nav-btn" id="navResources" onclick="showResources()">Resources</button>
+<button class="nav-btn" id="navAbout" onclick="showAbout()">About</button>
+<button class="nav-btn" id="navContact" onclick="showContact()">Contact</button>
+<button class="nav-btn" id="navFAQs" onclick="showFAQs()">FAQs</button>
+<button class="nav-btn" onclick="logout()">Logout</button>
+</div>
+
+<div class="welcome" id="welcomePage">
+<h1>Small Steps: Understanding Farmers</h1>
+<p>Helping landowners and tenants connect for a better agricultural future.</p>
+<button class="main-btn" onclick="enterSite()">Get Started</button>
+</div>
+
+<div class="container hidden" id="mainContent">
+<h1>Welcome to Small Steps</h1>
+<div class="section">
+<h2>How It Works</h2>
+<p>Landowners can lease their land to tenants. Tenants can find land to start or expand their farming journey.</p>
+</div>
+<div class="section">
+<h2>For Landowners</h2>
+<p>Post your agricultural land details. Set your rent terms. Find passionate tenants to cultivate your land.</p>
+</div>
+<div class="section">
+<h2>For Tenants</h2>
+<p>Search for available agricultural land. Connect with landowners. Start your farming dream!</p>
+</div>
+<div class="section">
+<h2>Contact Us</h2>
+<p>Have questions? Reach out to us at <strong>smallsteps@farmconnect.com</strong>.</p>
+</div>
+<div>
+<button class="main-btn" onclick="showRoleSelect('login')">Login (Landowner/Tenant)</button>
+<button class="main-btn" onclick="showRoleSelect('signup')">Sign Up (Landowner/Tenant)</button>
+<button class="main-btn" onclick="showAdminLoginPage()">Admin Login</button>
+</div>
+<footer>
+© 2025 Small Steps: Understanding Farmers
+</footer>
+</div>
+
+<div class="role-select-content hidden" id="roleSelectPage">
+<h1 id="roleSelectTitle">Choose Your Role</h1>
+<p style="font-size:1.2em;">Are you a Landowner or a Tenant?</p>
+<div class="role-btns">
+<button class="role-btn" onclick="proceedWithRole('landowner')">
+<span class="role-icon">🌾</span>
+Landowner
+</button>
+<button class="role-btn" onclick="proceedWithRole('tenant')">
+<span class="role-icon">👩‍🌾</span>
+Tenant
+</button>
+</div>
+<button class="back-button" onclick="backToMain()">Back</button>
+</div>
+
+<div class="container hidden" id="loginPage">
+<h1>Login</h1>
+<div class="form-container">
+<div id="lockedLoginRole" class="locked-role"></div>
+<input type="email" id="email" placeholder="Email" required>
+<input type="password" id="password" placeholder="Password" required>
+<button onclick="login()">Login</button>
+<p>Don't have an account? <a href="#" onclick="showRoleSelect('signup')" style="color: #4CAF50;">Sign up</a></p>
+</div>
+<button class="back-button" onclick="showRoleSelect('login')">Back</button>
+<footer>
+© 2025 Small Steps: Understanding Farmers
+</footer>
+</div>
+
+<div class="container hidden" id="signupPage">
+<h1>Sign Up</h1>
+<div class="form-container">
+<div id="lockedSignupRole" class="locked-role"></div>
+<input type="text" id="fullName" placeholder="Full Name" required>
+<input type="email" id="signupEmail" placeholder="Email" required>
+<input type="password" id="signupPassword" placeholder="Password" required>
+<input type="password" id="confirmPassword" placeholder="Confirm Password" required>
+<button onclick="signUp()">Sign Up</button>
+<p>Already have an account? <a href="#" onclick="showRoleSelect('login')" style="color: #4CAF50;">Login</a></p>
+</div>
+<button class="back-button" onclick="showRoleSelect('signup')">Back</button>
+<footer>
+© 2025 Small Steps: Understanding Farmers
+</footer>
+</div>
+
+<div class="dashboard hidden" id="landownerDashboard">
+<h1>Landowner Dashboard</h1>
+
+<div class="dashboard-section">
+    <h2>Your Land Listings</h2>
+    <p>Post your land details and manage your listings here.</p>
+    <button class="dashboard-btn" onclick="showPostLandForm()">Post New Land</button>
+    <div id="landownerListingsContainer">
+        <p id="noLandownerListings" class="hidden" style="text-align: center; margin-top: 20px;">You have no land listings yet. Click "Post New Land" to add one.</p>
+    </div>
+</div>
+
+<div class="dashboard-section">
+    <h2>Applications</h2>
+    <p>View tenant applications for your land.</p>
+    </div>
+
+<div class="dashboard-section">
+    <h2>Need Help?</h2>
+    <p>Chat with us for support or any questions regarding your land and tenants.</p>
+    <button class="dashboard-btn" onclick="showLandownerChat()">Chat with Support</button>
+</div>
+
+<button class="back-button" onclick="logout()">Logout</button>
+</div>
+
+<div class="dashboard hidden" id="tenantDashboard">
+<h1>Tenant Dashboard</h1>
+
+<div class="dashboard-section">
+    <h2>Find Land</h2>
+    <p>Browse available land listings and connect with landowners.</p>
+    <div id="tenantListingsContainer">
+        <p id="noTenantListings" class="hidden" style="text-align: center; margin-top: 20px;">No available land listings at the moment. Check back later!</p>
+    </div>
+</div>
+
+<div class="dashboard-section">
+    <h2>My Applications</h2>
+    <p>Track your rental applications and agreements.</p>
+    </div>
+
+<div class="dashboard-section">
+    <h2>Need Help?</h2>
+    <p>Chat with us for assistance with finding land or your applications.</p>
+    <button class="dashboard-btn" onclick="showTenantChat()">Chat with Support</button>
+</div>
+
+<button class="back-button" onclick="logout()">Logout</button>
+</div>
+
+<div class="container hidden" id="postLandContent">
+    <h1>Post New Land Listing</h1>
+    <div class="form-container">
+        <form id="postLandForm">
+            <input type="text" id="postLandTitle" placeholder="Title (e.g., '5 Acre Plot in Ghazipur')" required>
+            <textarea id="postLandDescription" placeholder="Detailed description of the land..." rows="4"></textarea>
+            <input type="text" id="postLandLocation" placeholder="Location (City, State, or Address)" required>
+            <input type="number" id="postLandSize" placeholder="Size (Acres)" step="0.01" min="0" required>
+            <input type="number" id="postLandRent" placeholder="Rent Per Month ($)" step="0.01" min="0" required>
+            <label for="postLandAvailableDate" style="display: block; text-align: left; font-size: 0.9em; color: #555; margin-top: 10px;">Available From (Optional Date):</label>
+            <input type="date" id="postLandAvailableDate">
+            <button type="submit">Submit Listing</button>
+        </form>
+    </div>
+    <button class="back-button" onclick="showDashboard()">Back to Dashboard</button>
+    <footer>
+        © 2025 Small Steps: Understanding Farmers
+    </footer>
+</div>
+
+<div class="container hidden landowner-chat-content" id="landownerChatContent">
+    <h1>Landowner Support Chat</h1>
+    <div class="form-container" style="max-width: 600px; text-align: left;">
+        <div id="landownerChatHistory" style="height: 300px; overflow-y: scroll; border: 1px solid #ccc; padding: 10px; margin-bottom: 10px; background-color: #fff;">
+            </div>
+        <form id="landownerChatForm">
+            <textarea id="landownerChatMessage" placeholder="Type your message here..." rows="3" required></textarea>
+            <button type="submit">Send Message</button>
+        </form>
+    </div>
+    <button class="back-button" onclick="showDashboard()">Back to Dashboard</button>
+    <footer>
+        © 2025 Small Steps: Understanding Farmers
+    </footer>
+</div>
+
+<div class="container hidden tenant-chat-content" id="tenantChatContent">
+    <h1>Tenant Support Chat</h1>
+    <div class="form-container" style="max-width: 600px; text-align: left;">
+        <div id="tenantChatHistory" style="height: 300px; overflow-y: scroll; border: 1px solid #ccc; padding: 10px; margin-bottom: 10px; background-color: #fff;">
+            </div>
+        <form id="tenantChatForm">
+            <textarea id="tenantChatMessage" placeholder="Type your message here..." rows="3" required></textarea>
+            <button type="submit">Send Message</button>
+        </form>
+    </div>
+    <button class="back-button" onclick="showDashboard()">Back to Dashboard</button>
+    <footer>
+        © 2025 Small Steps: Understanding Farmers
+    </footer>
+</div>
+
+<div class="container hidden" id="adminLoginPage">
+    <h1>Admin Login</h1>
+    <div class="form-container">
+        <input type="email" id="adminEmail" placeholder="Admin Email" required>
+        <input type="password" id="adminPassword" placeholder="Admin Password" required>
+        <button onclick="adminLogin()">Login as Admin</button>
+    </div>
+    <button class="back-button" onclick="backToMain()">Back</button>
+    <footer>
+        © 2025 Small Steps: Understanding Farmers
+    </footer>
+</div>
+
+<div class="dashboard hidden" id="adminDashboard">
+    <h1>Admin Dashboard</h1>
+    <div class="admin-chat-layout">
+        <div class="user-list-pane">
+            <h2>Users</h2>
+            <div id="userListContainer">
+                <p style="text-align: center; color: #888;">Loading users...</p>
+            </div>
+        </div>
+        <div class="chat-window-pane">
+            <h2 id="currentChatUserHeader">Select a user to chat with</h2>
+            <div id="adminChatHistory" class="chat-history-container">
+                <p style="text-align: center; color: #888;">No chat selected.</p>
+            </div>
+            <form id="adminChatReplyForm" class="chat-input-form">
+                <textarea id="adminReplyMessage" placeholder="Type your reply here..." rows="3" required disabled></textarea>
+                <button type="submit" disabled>Send Reply</button>
+            </form>
+        </div>
+    </div>
+    <button class="back-button" onclick="logout()">Logout</button>
+    <footer>
+        © 2025 Small Steps: Understanding Farmers
+    </footer>
+</div>
+<div class="map-content hidden" id="mapContent">
+<h1>Land Map</h1>
+<iframe
+src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3558487.462276561!2d77.03784185!3d26.84670835!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x399959ff1f527b85%3A0x6f3894a83c0900db!2sUttar%20Pradesh!5e0!3m2!1sen!2sin!4v1682337920827!5m2!1sen!2sin"
+allowfullscreen
+loading="lazy"
+referrerpolicy="no-referrer-when-downgrade">
+</iframe>
+<button class="back-button" onclick="showDashboard()">Back to Dashboard</button>
+</div>
+
+<div class="container hidden" id="profileContent">
+<h1>Profile</h1>
+<div class="dashboard-section">
+<h2>Personal Information</h2>
+<p><strong>Full Name:</strong> <span id="profileFullName"></span></p>
+<p><strong>Email:</strong> <span id="profileEmail"></span></p>
+<p><strong>Role:</strong> <span id="profileRole"></span></p>
+</div>
+<button class="back-button" onclick="showDashboard()">Back to Dashboard</button>
+</div>
+
+<div class="container hidden" id="resourcesContent">
+<h1>Resources</h1>
+<div class="dashboard-section">
+<h2>Documents & FAQs</h2>
+<p>Access lease templates, policies, and frequently asked questions.</p>
+<ul>
+    <li>Article: Sustainable Farming Practices</li>
+    <li>Guide: Legal Aspects of Land Leasing</li>
+    <li>Template: Land Lease Agreement</li>
+</ul>
+</div>
+<button class="back-button" onclick="showDashboard()">Back to Dashboard</button>
+</div>
+
+<div class="about-content hidden" id="aboutContent">
+<h1>About Small Steps</h1>
+<div class="section">
+<p>Small Steps is dedicated to connecting landowners and tenants for a better agricultural future. Our platform makes it easy to lease and find farmland, and provides helpful resources for both parties.</p>
+</div>
+<button class="back-button" onclick="showDashboard()">Back to Dashboard</button>
+</div>
+
+<div class="contact-content hidden" id="contactContent">
+<h1>Contact Us</h1>
+<div class="section">
+<p>Email: <strong>smallsteps@farmconnect.com</strong></p>
+<p>Phone: +91-12345-67890</p>
+<p>Address: 123, Agri Road, Lucknow, Uttar Pradesh, India</p>
+</div>
+<button class="back-button" onclick="showDashboard()">Back to Dashboard</button>
+</div>
+
+<div class="faqs-content hidden" id="faqsContent">
+<h1>Frequently Asked Questions</h1>
+<div class="section">
+<h3>How do I register as a landowner or tenant?</h3>
+<p>Sign up and select your role during registration.</p>
+<h3>Can I change my role later?</h3>
+<p>Contact support to request a role change.</p>
+<h3>Is my data secure?</h3>
+<p>We use best practices to keep your data safe.</p>
+</div>
+<button class="back-button" onclick="showDashboard()">Back to Dashboard</button>
+</div>
+
+<footer>
+© 2025 Small Steps: Understanding Farmers
+</footer>
+
+<div id="socketStatus" style="position: fixed; bottom: 10px; right: 10px; background-color: #f0f0f0; padding: 5px 10px; border-radius: 5px; font-size: 0.8em;">Socket Status: Disconnected</div>
+
+<script src="https://cdn.socket.io/4.7.5/socket.io.min.js"></script> <script>
+const API_BASE_URL = 'http://localhost:5000/api'; // Your backend API base URL
+let currentUser = null;
+let currentAction = null; // 'login' or 'signup'
+let selectedRole = null; // 'landowner' or 'tenant'
+let socket = null; // NEW: Global socket variable
+let selectedChatUserId = null; // NEW: Track which user the admin is currently chatting with
+
+// --- Get references to all content sections ---
+const welcomePage = document.getElementById('welcomePage');
+const mainContent = document.getElementById('mainContent');
+const roleSelectPage = document.getElementById('roleSelectPage');
+const loginPage = document.getElementById('loginPage');
+const signupPage = document.getElementById('signupPage');
+const landownerDashboard = document.getElementById('landownerDashboard');
+const tenantDashboard = document.getElementById('tenantDashboard');
+const mapContent = document.getElementById('mapContent');
+const profileContent = document.getElementById('profileContent');
+const resourcesContent = document.getElementById('resourcesContent');
+const aboutContent = document.getElementById('aboutContent');
+const contactContent = document.getElementById('contactContent');
+const faqsContent = document.getElementById('faqsContent');
+const navBar = document.getElementById('navBar');
+const postLandContent = document.getElementById('postLandContent');
+const landownerChatContent = document.getElementById('landownerChatContent');
+// FIX: Corrected typo in assignment for tenantChatContent
+const tenantChatContent = document.getElementById('tenantChatContent');
+
+// --- Get references to specific UI elements ---
+const navMap = document.getElementById('navMap');
+const lockedLoginRole = document.getElementById('lockedLoginRole');
+const lockedSignupRole = document.getElementById('lockedSignupRole');
+const postLandForm = document.getElementById('postLandForm');
+const landownerListingsContainer = document.getElementById('landownerListingsContainer');
+const noLandownerListings = document.getElementById('noLandownerListings');
+const tenantListingsContainer = document.getElementById('tenantListingsContainer');
+const noTenantListings = document.getElementById('noTenantListings');
+const profileFullName = document.getElementById('profileFullName');
+const profileEmail = document.getElementById('profileEmail');
+const profileRole = document.getElementById('profileRole');
+
+const landownerChatForm = document.getElementById('landownerChatForm');
+const landownerChatMessage = document.getElementById('landownerChatMessage');
+const landownerChatHistory = document.getElementById('landownerChatHistory');
+
+const tenantChatForm = document.getElementById('tenantChatForm');
+const tenantChatMessage = document.getElementById('tenantChatMessage');
+const tenantChatHistory = document.getElementById('tenantChatHistory');
+
+// NEW ADMIN CODE: Get references for admin UI elements
+const adminLoginPage = document.getElementById('adminLoginPage');
+const adminEmail = document.getElementById('adminEmail');
+const adminPassword = document.getElementById('adminPassword');
+const adminDashboard = document.getElementById('adminDashboard');
+const userListContainer = document.getElementById('userListContainer');
+const currentChatUserHeader = document.getElementById('currentChatUserHeader');
+const adminChatHistory = document.getElementById('adminChatHistory');
+const adminChatReplyForm = document.getElementById('adminChatReplyForm');
+const adminReplyMessage = document.getElementById('adminReplyMessage');
+const adminReplyButton = adminChatReplyForm.querySelector('button[type="submit"]');
+// END NEW ADMIN CODE
+
+// Get reference to socket status indicator
+const socketStatusIndicator = document.getElementById('socketStatus');
+
+
+function hideAll() {
+    // Array of all page IDs to hide
+    const pageIds = [
+        'welcomePage', 'mainContent', 'loginPage', 'signupPage',
+        'landownerDashboard', 'tenantDashboard', 'mapContent',
+        'profileContent', 'resourcesContent', 'aboutContent',
+        'contactContent', 'faqsContent', 'navBar', 'roleSelectPage',
+        'postLandContent', 'landownerChatContent', 'tenantChatContent',
+        'adminLoginPage', 'adminDashboard'
+    ];
+    pageIds.forEach(id => {
+        const element = document.getElementById(id);
+        if (element) {
+            element.classList.add('hidden');
+        }
+    });
+}
+
+function enterSite() {
+    hideAll();
+    mainContent.classList.remove('hidden');
+    resetRoleAction();
+}
+
+function showNav(role) {
+    if (role === 'admin') {
+        navBar.classList.add('hidden');
+    } else {
+        navBar.classList.remove('hidden');
+    }
+    navMap.style.display = (role === 'landowner') ? 'inline-block' : 'none';
+}
+
+function setActiveNav(id) {
+    document.querySelectorAll('.nav-btn').forEach(btn => btn.classList.remove('active'));
+    if (id) document.getElementById(id).classList.add('active');
+}
+
+function showRoleSelect(action) {
+    hideAll();
+    currentAction = action;
+    selectedRole = null;
+    document.getElementById('roleSelectTitle').textContent =
+        action === 'login' ? 'Login: Choose Your Role' : 'Sign Up: Choose Your Role';
+    roleSelectPage.classList.remove('hidden');
+}
+
+function proceedWithRole(role) {
+    selectedRole = role;
+    if (currentAction === 'login') {
+        showLoginPage();
+    } else {
+        showSignUpPage();
+    }
+}
+
+function showLoginPage() {
+    hideAll();
+    loginPage.classList.remove('hidden');
+    lockedLoginRole.textContent =
+        selectedRole === 'landowner' ? 'Role: Landowner' : 'Role: Tenant';
+}
+
+function showSignUpPage() {
+    hideAll();
+    signupPage.classList.remove('hidden');
+    lockedSignupRole.textContent =
+        selectedRole === 'landowner' ? 'Role: Landowner' : 'Role: Tenant';
+}
+
+function backToMain() {
+    hideAll();
+    welcomePage.classList.remove('hidden'); // Go back to the initial welcomePage (first screen)
+    resetRoleAction();
+    disconnectSocket(); // Disconnect socket on back to main
+}
+
+function resetRoleAction() {
+    currentAction = null;
+    selectedRole = null;
+}
+
+// NEW: Socket.IO Connection and Disconnection
+function connectSocket() {
+    if (!socket || !socket.connected) {
+        // Connect to your server's Socket.IO endpoint
+        // This URL should match the backend server's address and port
+        socket = io('http://localhost:5000'); 
+        
+        socket.on('connect', () => {
+            console.log('Connected to Socket.IO server.');
+            socketStatusIndicator.textContent = 'Socket Status: Connected';
+            socketStatusIndicator.style.backgroundColor = '#d4edda'; // Greenish for connected
+
+            // Emit the join room event based on the current user's role
+            if (currentUser) {
+                console.log('Attempting to join room. Current User Role:', currentUser.role, 'User ID:', currentUser.id); // Debug log
+                if (currentUser.role === 'admin') {
+                    socket.emit('joinAdminRoom');
+                } else {
+                    // For landowners and tenants, join their specific user room
+                    socket.emit('joinUserRoom', currentUser.id);
+                }
+            } else {
+                console.warn('currentUser is null when trying to connect socket. Room not joined.');
+            }
+        });
+        socket.on('disconnect', () => {
+            console.log('Disconnected from Socket.IO server.');
+            socketStatusIndicator.textContent = 'Socket Status: Disconnected';
+            socketStatusIndicator.style.backgroundColor = '#f0f0f0'; // Greyish for disconnected
+        });
+        socket.on('connect_error', (error) => {
+            console.error('Socket.IO connection error:', error);
+            socketStatusIndicator.textContent = 'Socket Status: Error';
+            socketStatusIndicator.style.backgroundColor = '#f8d7da'; // Reddish for error
+        });
+
+        // Listen for incoming messages from the server
+        socket.on('receiveMessage', (msg) => {
+            console.log('--- Received Message Debug ---');
+            console.log('Received message object:', msg);
+            console.log('Current User ID (frontend):', currentUser ? currentUser.id : 'N/A');
+            console.log('Message User ID (from server):', msg.userId);
+            console.log('Current User Role (frontend):', currentUser ? currentUser.role : 'N/A');
+            console.log('Message User Role (from server):', msg.userRole);
+            console.log('Selected Chat User ID (admin frontend):', selectedChatUserId);
+            console.log('Message targetUserId (from server, if admin sent):', msg.targetUserId);
+
+            // Logic for displaying messages
+            if (currentUser.role !== 'admin') {
+                // For regular users (landowner/tenant)
+                // Display if message is from self OR if it's an admin message targeted to this user
+                if (msg.userId === currentUser.id || (msg.userRole === 'admin' && msg.targetUserId === currentUser.id)) {
+                    console.log('Displaying message for regular user (self or admin reply targeted to self).');
+                    displayMessage(msg, currentUser.role === 'landowner' ? landownerChatHistory : tenantChatHistory);
+                } else {
+                    console.log('Message not relevant for current regular user (not self, not admin reply targeted to self).');
+                }
+            } else {
+                // For admin user
+                // Condition 1: Message is from the currently selected user
+                const isFromSelectedUser = (selectedChatUserId && msg.userId === selectedChatUserId && msg.userRole !== 'admin');
+                // Condition 2: Message is from the current admin AND it's a reply to the selected user
+                const isSelfAdminReplyToSelectedUser = (msg.userId === currentUser.id && msg.userRole === 'admin' && msg.targetUserId === selectedChatUserId);
+
+                if (isFromSelectedUser || isSelfAdminReplyToSelectedUser) {
+                    console.log('Displaying message for admin (from selected user or self-reply to selected user).');
+                    displayMessage(msg, adminChatHistory, selectedChatUserId);
+                } else {
+                    console.log('Message not relevant for current admin selected chat.');
+                    // If it's a new message from a user not currently selected, update user list
+                    if (msg.userRole !== 'admin' && !selectedChatUserId) { // If no chat selected, and new user message
+                        console.log('New user message received, but no chat selected. Refreshing user list.');
+                        fetchUsersForAdminChat(); 
+                    } else if (msg.userRole !== 'admin' && selectedChatUserId && msg.userId !== selectedChatUserId) {
+                        // Message from a different user while another chat is open
+                        console.log('Message from a different user while another chat is open. Refreshing user list.');
+                        fetchUsersForAdminChat();
+                    }
+                }
+            }
+            console.log('--- End Received Message Debug ---');
+        });
+    }
+}
+
+function disconnectSocket() {
+    if (socket && socket.connected) {
+        socket.disconnect();
+        socket = null;
+        socketStatusIndicator.textContent = 'Socket Status: Disconnected';
+        socketStatusIndicator.style.backgroundColor = '#f0f0f0'; // Greyish for disconnected
+    }
+}
+
+// Function to display a single message in the correct chat history
+// Added a third argument: targetUserId for admin's specific chat view
+function displayMessage(msg, chatHistoryElement, targetUserId = null) {
+    if (!chatHistoryElement) {
+        console.error("Chat history element not found for displaying message.");
+        return;
+    }
+
+    // Clear "No chat selected" message if it exists
+    if (chatHistoryElement.querySelector('p[style*="No chat selected"]')) {
+        chatHistoryElement.innerHTML = '';
+    }
+    // Clear "No chat messages yet" message if it exists
+    if (chatHistoryElement.querySelector('p[style*="No chat messages yet"]')) {
+        chatHistoryElement.innerHTML = '';
+    }
+
+
+    const messageDiv = document.createElement('div');
+    // A message is 'self' if it's from the current user.
+    // For admin, 'self' means it's from the admin, 'other' means it's from the selected user.
+    const isSelf = (currentUser && msg.userId === currentUser.id);
+    
+    let senderName;
+    if (currentUser.role === 'admin') {
+        if (isSelf) {
+            senderName = 'You (Admin)';
+        } else {
+            senderName = msg.userName; // Name of the user admin is chatting with
+        }
+    } else {
+        if (isSelf) {
+            senderName = 'You';
+        } else if (msg.userRole === 'admin') {
+            senderName = 'Support'; // User sees admin messages as "Support"
+        } else {
+            senderName = msg.userName; // Should not happen in 1-on-1 user chat
+        }
+    }
+
+    messageDiv.classList.add('chat-message');
+    messageDiv.classList.add(isSelf ? 'self' : 'other');
+
+    const timestamp = new Date(msg.timestamp).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+
+    messageDiv.innerHTML = `
+        <p style="margin: 0;">
+            <strong>${senderName}:</strong> ${msg.message}
+        </p>
+        <small style="font-size: 0.75em; color: #555;">${timestamp}</small>
+    `;
+    chatHistoryElement.appendChild(messageDiv);
+    chatHistoryElement.scrollTop = chatHistoryElement.scrollHeight; // Scroll to bottom
+}
+
+
+// --- API Request Helper ---
+async function sendAuthRequest(url, method, data) {
+    const options = {
+        method: method,
+        headers: {
+            'Content-Type': 'application/json'
+        }
+    };
+    if (data) {
+        options.body = JSON.stringify(data);
+    }
+
+    const token = localStorage.getItem('token');
+    if (token) {
+        options.headers['Authorization'] = `Bearer ${token}`;
+    }
+
+    try {
+        const response = await fetch(url, options);
+        const responseData = await response.json();
+
+        if (!response.ok) {
+            console.error('API Error:', response.status, responseData.error);
+            if (response.status === 401 || response.status === 403) {
+                alert('Your session has expired or is invalid. Please log in again.');
+                logout();
+                return null;
+            }
+            throw new Error(responseData.error || 'Server error.');
+        }
+        return responseData;
+    } catch (error) {
+        console.error('Network or API request failed:', error);
+        alert('An error occurred: ' + error.message);
+        return null;
+    }
+}
+
+// --- Authentication Functions ---
+function signUp() {
+    const fullName = document.getElementById('fullName').value.trim();
+    const email = document.getElementById('signupEmail').value.trim();
+    const password = document.getElementById('signupPassword').value;
+    const confirmPassword = document.getElementById('confirmPassword').value;
+    const role = selectedRole;
+
+    if (!fullName || !email || !password || !confirmPassword || !role) {
+        alert("Please fill out all fields.");
+        return;
+    }
+    if (password !== confirmPassword) {
+        alert("Passwords do not match.");
+        return;
+    }
+
+    sendAuthRequest(`${API_BASE_URL}/signup`, 'POST', { fullName, email, password, role })
+        .then(data => {
+            if (data && data.success) {
+                alert('Signup successful!');
+                showRoleSelect('login');
+            } else {
+                // Error handled by sendAuthRequest
+            }
+        });
+}
+
+function login() {
+    const email = document.getElementById('email').value.trim();
+    const password = document.getElementById('password').value;
+    const role = selectedRole;
+    if (!email || !password || !role) {
+        alert("Please fill out all fields.");
+        return;
+    }
+
+    sendAuthRequest(`${API_BASE_URL}/login`, 'POST', { email, password, role })
+        .then(data => {
+            if (data && data.token) {
+                localStorage.setItem('token', data.token);
+                localStorage.setItem('user', JSON.stringify(data.user));
+                currentUser = data.user; // currentUser is set here
+                console.log('Login successful. Current User:', currentUser); // Debug log
+                hideAll();
+                showNav(currentUser.role);
+                connectSocket(); // Connect to WebSocket upon successful login
+                showDashboard();
+            } else {
+                // Error handled by sendAuthRequest
+            }
+        });
+}
+
+function logout() {
+    localStorage.removeItem('token');
+    localStorage.removeItem('user');
+    currentUser = null;
+    hideAll();
+    welcomePage.classList.remove('hidden');
+    resetRoleAction();
+    disconnectSocket(); // Disconnect socket on logout
+}
+
+// --- Dashboard & Navigation Functions ---
+function showDashboard() {
+    hideAll();
+    showNav(currentUser.role);
+    if (currentUser.role === 'landowner') {
+        landownerDashboard.classList.remove('hidden');
+        fetchLandownerListings();
+    } else if (currentUser.role === 'tenant') {
+        tenantDashboard.classList.remove('hidden');
+        fetchAllLandListings();
+    } else if (currentUser.role === 'admin') {
+        showAdminDashboard();
+    }
+    setActiveNav('navDashboard');
+}
+
+function showMap() {
+    if (currentUser && currentUser.role === 'landowner') {
+        hideAll();
+        showNav('landowner');
+        mapContent.classList.remove('hidden');
+        setActiveNav('navMap');
+    } else {
+        alert("Map feature is primarily for landowners.");
+    }
+}
+
+function showProfile() {
+    hideAll();
+    showNav(currentUser.role);
+    profileContent.classList.remove('hidden');
+    setActiveNav('navProfile');
+    profileFullName.textContent = currentUser.fullName;
+    profileEmail.textContent = currentUser.email;
+    profileRole.textContent = currentUser.role;
+}
+
+function showResources() {
+    hideAll();
+    showNav(currentUser.role);
+    resourcesContent.classList.remove('hidden');
+    setActiveNav('navResources');
+}
+
+function showAbout() {
+    hideAll();
+    showNav(currentUser.role);
+    aboutContent.classList.remove('hidden');
+    setActiveNav('navAbout');
+}
+
+function showContact() {
+    hideAll();
+    showNav(currentUser.role);
+    contactContent.classList.remove('hidden');
+    setActiveNav('navContact');
+}
+
+function showFAQs() {
+    hideAll();
+    showNav(currentUser.role);
+    faqsContent.classList.remove('hidden');
+    setActiveNav('navFAQs');
+}
+
+// --- Land Listing Management Functions ---
+
+function showPostLandForm() {
+    hideAll();
+    showNav(currentUser.role);
+    postLandContent.classList.remove('hidden');
+}
+
+postLandForm.addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const title = document.getElementById('postLandTitle').value.trim();
+    const description = document.getElementById('postLandDescription').value.trim();
+    const location = document.getElementById('postLandLocation').value.trim();
+    const sizeAcres = parseFloat(document.getElementById('postLandSize').value);
+    const rentPerMonth = parseFloat(document.getElementById('postLandRent').value);
+    const availableDate = document.getElementById('postLandAvailableDate').value;
+
+    if (!title || !location || isNaN(sizeAcres) || sizeAcres <= 0 || isNaN(rentPerMonth) || rentPerMonth <= 0) {
+        alert('Please fill in all required fields correctly (Title, Location, positive Size, and positive Rent).');
+        return;
+    }
+
+    const listingData = {
+        title, description, location, sizeAcres, rentPerMonth, availableDate
+    };
+
+    const result = await sendAuthRequest(`${API_BASE_URL}/landlistings`, 'POST', listingData);
+
+    if (result && result.success) {
+        alert('Land listing submitted successfully!');
+        postLandForm.reset();
+        showDashboard();
+    } else {
+        // Error handled by sendAuthRequest
+    }
+});
+
+async function fetchLandownerListings() {
+    landownerListingsContainer.innerHTML = '';
+    noLandownerListings.classList.add('hidden');
+
+    const result = await sendAuthRequest(`${API_BASE_URL}/landlistings/mine`, 'GET');
+
+    if (result && result.length > 0) {
+        result.forEach(listing => {
+            const listingDiv = document.createElement('div');
+            listingDiv.innerHTML = `
+                <h3>${listing.title}</h3>
+                <p>${listing.description || 'No description provided.'}</p>
+                <p><strong>Location:</strong> ${listing.location}</p>
+                <p><strong>Size:</strong> ${listing.sizeAcres} acres</p>
+                <p><strong>Rent:</strong> $${listing.rentPerMonth} / month</p>
+                <p><strong>Available:</strong> ${listing.availableDate ? new Date(listing.availableDate).toLocaleDateString() : 'Immediately'}</p>
+                <p><strong>Contact:</strong> ${listing.contactEmail}</p>
+                <hr style="border: 0; height: 1px; background-image: linear-gradient(to right, rgba(0, 0, 0, 0), rgba(0, 0, 0, 0.2), rgba(0, 0, 0, 0)); margin: 15px 0;"> `;
+            landownerListingsContainer.appendChild(listingDiv);
+        });
+    } else if (result) {
+        noLandownerListings.classList.remove('hidden');
+    }
+}
+
+async function fetchAllLandListings() {
+    tenantListingsContainer.innerHTML = '';
+    noTenantListings.classList.add('hidden');
+
+    const result = await sendAuthRequest(`${API_BASE_URL}/landlistings/all`, 'GET');
+
+    if (result && result.length > 0) {
+        result.forEach(listing => {
+            const listingDiv = document.createElement('div');
+            listingDiv.innerHTML = `
+                <h3>${listing.title}</h3>
+                <p>${listing.description || 'No description provided.'}</p>
+                <p><strong>Location:</strong> ${listing.location}</p>
+                <p><strong>Size:</strong> ${listing.sizeAcres} acres</p>
+                <p><strong>Rent:</strong> $${listing.rentPerMonth} / month</p>
+                <p><strong>Available:</strong> ${listing.availableDate ? new Date(listing.availableDate).toLocaleDateString() : 'Immediately'}</p>
+                <hr style="border: 0; height: 1px; background-image: linear-gradient(to right, rgba(0, 0, 0, 0), rgba(0, 0, 0, 0.2), rgba(0, 0, 0, 0)); margin: 15px 0;"> `;
+            tenantListingsContainer.appendChild(listingDiv);
+        });
+    } else if (result) {
+        noTenantListings.classList.remove('hidden');
+    }
+}
+
+// --- Chat Functions (Modified for WebSockets) ---
+
+async function showLandownerChat() {
+    hideAll();
+    showNav(currentUser.role);
+    landownerChatContent.classList.remove('hidden');
+    landownerChatHistory.innerHTML = ''; // Clear previous messages
+
+    // Fetch and display historical messages
+    const messages = await sendAuthRequest(`${API_BASE_URL}/chat/messages/my`, 'GET');
+    if (messages && messages.length > 0) {
+        messages.forEach(msg => displayMessage(msg, landownerChatHistory));
+    } else if (messages) {
+        landownerChatHistory.innerHTML = '<p style="text-align: center; color: #888;">No chat messages yet. Start a conversation!</p>';
+    }
+}
+
+async function showTenantChat() {
+    hideAll();
+    showNav(currentUser.role);
+    tenantChatContent.classList.remove('hidden');
+    tenantChatHistory.innerHTML = ''; // Clear previous messages
+
+    // Fetch and display historical messages
+    const messages = await sendAuthRequest(`${API_BASE_URL}/chat/messages/my`, 'GET');
+    if (messages && messages.length > 0) {
+        messages.forEach(msg => displayMessage(msg, tenantChatHistory));
+    } else if (messages) {
+        tenantChatHistory.innerHTML = '<p style="text-align: center; color: #888;">No chat messages yet. Start a conversation!</p>';
+    }
+}
+
+// Handle sending messages from Landowner chat form
+landownerChatForm.addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const message = landownerChatMessage.value.trim();
+    if (!message || !socket) {
+        alert("Please enter a message and ensure chat is connected.");
+        return;
+    }
+
+    // Emit message via WebSocket
+    socket.emit('sendMessage', {
+        message: message,
+        userId: currentUser.id,
+        userRole: currentUser.role,
+        userName: currentUser.fullName
+    });
+
+    landownerChatMessage.value = ''; // Clear input field
+});
+
+// Handle sending messages from Tenant chat form
+tenantChatForm.addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const message = tenantChatMessage.value.trim();
+    if (!message || !socket) {
+        alert("Please enter a message and ensure chat is connected.");
+        return;
+    }
+
+    // Emit message via WebSocket
+    socket.emit('sendMessage', {
+        message: message,
+        userId: currentUser.id,
+        userRole: currentUser.role,
+        userName: currentUser.fullName
+    });
+
+    tenantChatMessage.value = ''; // Clear input field
+});
+
+// Admin Login and Chat History Functions
+function showAdminLoginPage() {
+    hideAll();
+    adminLoginPage.classList.remove('hidden');
+    adminEmail.value = ''; // Clear previous input
+    adminPassword.value = ''; // Clear previous input
+    selectedRole = 'admin';
+}
+
+async function adminLogin() {
+    const email = adminEmail.value.trim();
+    const password = adminPassword.value;
+    const role = 'admin';
+
+    if (!email || !password) {
+        alert("Please enter admin email and password.");
+        return;
+    }
+
+    const data = await sendAuthRequest(`${API_BASE_URL}/login`, 'POST', { email, password, role });
+
+    if (data && data.token) {
+        localStorage.setItem('token', data.token);
+        localStorage.setItem('user', JSON.stringify(data.user));
+        currentUser = data.user;
+        console.log('Admin Login successful. Current User:', currentUser); // Debug log
+        hideAll();
+        showNav(currentUser.role);
+        connectSocket(); // Connect for admin too
+        showAdminDashboard();
+    } else {
+        // Error handled by sendAuthRequest
+    }
+}
+
+async function showAdminDashboard() {
+    hideAll();
+    showNav(currentUser.role);
+    adminDashboard.classList.remove('hidden');
+    setActiveNav(null); // No active nav button for admin dashboard
+
+    // Reset selected chat user when entering admin dashboard
+    selectedChatUserId = null;
+    currentChatUserHeader.textContent = 'Select a user to chat with';
+    adminChatHistory.innerHTML = '<p style="text-align: center; color: #888;">No chat selected.</p>';
+    adminReplyMessage.disabled = true;
+    adminReplyButton.disabled = true;
+
+    fetchUsersForAdminChat(); // Fetch and display the list of users
+}
+
+// NEW: Function to fetch and display users for admin chat
+async function fetchUsersForAdminChat() {
+    userListContainer.innerHTML = '<p style="text-align: center; color: #888;">Loading users...</p>';
+    // We need an endpoint to get all users who have sent messages, or just all users
+    // For now, let's assume we fetch all messages and extract unique users from them.
+    // A dedicated backend endpoint for 'GET /api/users/chat-participants' would be better.
+    const allMessages = await sendAuthRequest(`${API_BASE_URL}/chat/messages/all`, 'GET');
+
+    if (allMessages) {
+        const uniqueUsers = {};
+        allMessages.forEach(msg => {
+            if (msg.userRole !== 'admin') { // Only list non-admin users
+                uniqueUsers[msg.userId] = {
+                    id: msg.userId,
+                    fullName: msg.userName,
+                    role: msg.userRole
+                };
+            }
+        });
+
+        userListContainer.innerHTML = ''; // Clear loading message
+
+        if (Object.keys(uniqueUsers).length > 0) {
+            Object.values(uniqueUsers).forEach(user => {
+                const userItem = document.createElement('div');
+                userItem.classList.add('user-list-item');
+                userItem.dataset.userId = user.id;
+                userItem.dataset.userName = user.fullName;
+                userItem.innerHTML = `<strong>${user.fullName}</strong> (${user.role})`;
+                userItem.addEventListener('click', () => selectAdminChatUser(user.id, user.fullName));
+                userListContainer.appendChild(userItem);
+            });
+        } else {
+            userListContainer.innerHTML = '<p style="text-align: center; color: #888;">No users to chat with yet.</p>';
+        }
+    } else {
+        userListContainer.innerHTML = '<p style="text-align: center; color: red;">Failed to load user list.</p>';
+    }
+}
+
+// NEW: Function to handle selecting a user in admin chat
+async function selectAdminChatUser(userId, userName) {
+    // Remove active class from all user items
+    document.querySelectorAll('.user-list-item').forEach(item => {
+        item.classList.remove('active-chat');
+    });
+
+    // Add active class to the clicked user item
+    const selectedItem = document.querySelector(`.user-list-item[data-user-id="${userId}"]`);
+    if (selectedItem) {
+        selectedItem.classList.add('active-chat');
+    }
+
+    selectedChatUserId = userId;
+    currentChatUserHeader.textContent = `Chat with ${userName}`;
+    adminChatHistory.innerHTML = '<p style="text-align: center; color: #888;">Loading chat history...</p>';
+    adminReplyMessage.disabled = false;
+    adminReplyButton.disabled = false;
+    adminReplyMessage.focus(); // Focus on input after selecting user
+
+    // Fetch and display chat history for the selected user
+    // Pass targetUserId to the backend API to filter messages correctly
+    const messages = await sendAuthRequest(`${API_BASE_URL}/chat/messages/my?targetUserId=${userId}`, 'GET');
+    adminChatHistory.innerHTML = ''; // Clear loading message
+
+    if (messages && messages.length > 0) {
+        messages.forEach(msg => displayMessage(msg, adminChatHistory, userId));
+    } else if (messages) {
+        adminChatHistory.innerHTML = '<p style="text-align: center; color: #888;">No messages in this conversation yet. Start typing!</p>';
+    } else {
+        adminChatHistory.innerHTML = '<p style="text-align: center; color: red;">Failed to load chat history.</p>';
+    }
+}
+
+
+// NEW: Admin reply functionality
+adminChatReplyForm.addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const message = adminReplyMessage.value.trim();
+    if (!message || !socket || !selectedChatUserId) {
+        alert("Please enter a message and select a user to chat with.");
+        return;
+    }
+
+    // Emit admin reply via WebSocket, targeting the selected user's room
+    socket.emit('sendMessage', {
+        message: message,
+        userId: currentUser.id,
+        userRole: currentUser.role,
+        userName: currentUser.fullName,
+        targetUserId: selectedChatUserId // IMPORTANT: Tell the server who this message is FOR
+    });
+
+    adminReplyMessage.value = ''; // Clear input field
+});
+
+// --- Initial setup on page load ---
+document.addEventListener('DOMContentLoaded', () => {
+    const token = localStorage.getItem('token');
+    const userString = localStorage.getItem('user');
+
+    if (token && userString) {
+        try {
+            currentUser = JSON.parse(userString);
+            if (currentUser && currentUser.fullName && currentUser.email && currentUser.role) {
+                console.log('DOMContentLoaded: User found in localStorage. Role:', currentUser.role); // Debug log
+                hideAll();
+                showNav(currentUser.role);
+                connectSocket(); // Connect socket on page load if user is already logged in
+                if (currentUser.role === 'admin') {
+                    showAdminDashboard(); // Direct to admin dashboard
+                } else {
+                    showDashboard();
+                }
+            } else {
+                console.warn('DOMContentLoaded: User data incomplete or invalid in localStorage.');
+                logout();
+            }
+        } catch (e) {
+            console.error("Error parsing user data from localStorage:", e);
+            logout();
+        }
+    } else {
+        console.log('DOMContentLoaded: No user found in localStorage. Showing welcome page.');
+        hideAll();
+        welcomePage.classList.remove('hidden');
+    }
+});
+
+</script>
+</body>
+</html>
